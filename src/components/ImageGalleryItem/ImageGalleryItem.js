@@ -1,11 +1,17 @@
 import css from './ImageGalleryItem.module.css';
 
-export function ImageGalleryItem({ data, children }) {
+export function ImageGalleryItem({ data, onClick, chooseImage }) {
   return (
     <>
-      {data.map(({ id, webformatURL, largeImageURL }) => (
-        <li key={id}>
-          <img className={css.image} src={webformatURL} alt="ddewfx" />
+      {data.map(({ id, webformatURL }) => (
+        <li
+          key={id}
+          onClick={() => {
+            onClick();
+            chooseImage(webformatURL);
+          }}
+        >
+          <img className={css.image} alt={'dsad'} src={webformatURL} />
         </li>
       ))}
     </>
