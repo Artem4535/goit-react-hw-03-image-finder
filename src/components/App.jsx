@@ -3,7 +3,6 @@ import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { LoadMoreButton } from "./Button/LoadModeButton";
 import { FetchPhoto } from "./Api/Api";
-import axios from "axios";
 export class App extends React.Component   {
   state = {
     inputValue: '',
