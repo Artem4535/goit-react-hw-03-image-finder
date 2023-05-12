@@ -9,16 +9,36 @@ import { Loader } from "./Loader/Loader";
 export class App extends React.Component   {
   state = {
     inputValue: '',
-     data: [],
+    data: [],
     page: 1,
-    showModal: false,
+    total: 0,
     largeImage: '',
     error: '',
+    showModal: false,
     loading: false,
+    
   };
+
+   componentDidUpdate(_, prevState) {
+    const { inputValue, page,} = this.state
+    if (inputValue !== prevState.inputValue || prevState.page !== page) {
+      this.setState({loading: true})
+      FetchPhoto(inputValue, page)
+        .then(({ hits, total }) => {
+          if (hits.length === 0) {
+            Notiflix.Notify.failure('Not found')
+            return
+          }
+          this.setState(prevState => ({ data: [...prevState.data, ...hits] }))
+          this.setState({total,})  
+        }
+      )
+        .catch(error => console.log(error.message)).finally(() => this.setState({loading: false}))
+   }
+  }
   
   handlerSumbitForm = value => {
-    this.setState({ inputValue: value, data: [] })
+    this.setState({ inputValue: value, data: [], page: 1 })
   }
 
   incrementPage = () => {
@@ -28,27 +48,7 @@ export class App extends React.Component   {
      
     });
   }
-
-  componentDidUpdate(_, prevState) {
-    const { inputValue, page,} = this.state
-    if (inputValue !== prevState.inputValue || prevState.page !== page) {
-      this.setState({loading: true})
-      FetchPhoto(inputValue, page)
-        .then(({ hits }) => {
-          if (hits.length === 0) {
-            Notiflix.Notify.failure('Not found')
-            return
-          }
-          this.setState(prevState => ({ data: [...prevState.data, ...hits] }))
-          
-        }
-      )
-        
-        
-        .catch(error => console.log(error.message)).finally(() => this.setState({loading: false}))
-   }
-  }
-  
+ 
   toggleModal = () => {
    
     this.setState(({ showModal }) => ({
@@ -60,16 +60,15 @@ export class App extends React.Component   {
     this.setState({largeImage: url})
   }
 
-
   render() {
-    const { data, showModal, largeImage, loading } = this.state
+    const { data, showModal, largeImage, loading, page, total } = this.state
     const dataLength = data.length > 0;
     return (
       <>
         <Searchbar onSubmit={this.handlerSumbitForm}/>
         <ImageGallery data={data} onClick={this.toggleModal} chooseImage={this.chooseImage} />
         {loading && <Loader/>}
-        {dataLength && <LoadMoreButton onClick={this.incrementPage} />}
+        {dataLength && total > page * 12 && <LoadMoreButton onClick={this.incrementPage} />}
         {showModal && <Modal largeImage={largeImage } toggleModal={this.toggleModal} />}
       </>
     )
