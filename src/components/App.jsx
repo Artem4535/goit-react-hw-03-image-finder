@@ -1,4 +1,5 @@
 import React from "react";
+import Notiflix, { Notify } from "notiflix";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { LoadMoreButton } from "./Button/LoadModeButton";
@@ -29,11 +30,21 @@ export class App extends React.Component   {
   }
 
   componentDidUpdate(_, prevState) {
-    const { inputValue, page } = this.state
+    const { inputValue, page,} = this.state
     if (inputValue !== prevState.inputValue || prevState.page !== page) {
       this.setState({loading: true})
       FetchPhoto(inputValue, page)
-        .then(({ hits }) => this.setState(prevState => ({ data: [...prevState.data, ...hits] })))
+        .then(({ hits }) => {
+          if (hits.length === 0) {
+            Notiflix.Notify.failure('Not found')
+            return
+          }
+          this.setState(prevState => ({ data: [...prevState.data, ...hits] }))
+          
+        }
+      )
+        
+        
         .catch(error => console.log(error.message)).finally(() => this.setState({loading: false}))
    }
   }
