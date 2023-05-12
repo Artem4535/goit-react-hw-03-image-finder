@@ -1,5 +1,5 @@
 import React from "react";
-import Notiflix, { Notify } from "notiflix";
+import Notiflix from "notiflix";
 import { Searchbar } from "./Searchbar/Searchbar";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { LoadMoreButton } from "./Button/LoadModeButton";
@@ -50,7 +50,6 @@ export class App extends React.Component   {
   }
   
   toggleModal = () => {
-    const { showModal } = this.state
    
     this.setState(({ showModal }) => ({
       showModal: !showModal
